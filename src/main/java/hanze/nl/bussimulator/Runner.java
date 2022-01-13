@@ -50,51 +50,28 @@ public class Runner {
 			bus.sendETAs(nu);
 		}				
 	}
-	
+
 	public static int initBussen(){
-		Bus bus1=new Bus(Lijnen.LIJN1, Bedrijven.ARRIVA, 1);
-		Bus bus2=new Bus(Lijnen.LIJN2, Bedrijven.ARRIVA, 1);
-		Bus bus3=new Bus(Lijnen.LIJN3, Bedrijven.ARRIVA, 1);
-		Bus bus4=new Bus(Lijnen.LIJN4, Bedrijven.ARRIVA, 1);
-		Bus bus5=new Bus(Lijnen.LIJN5, Bedrijven.FLIXBUS, 1);
-		Bus bus6=new Bus(Lijnen.LIJN6, Bedrijven.QBUZZ, 1);
-		Bus bus7=new Bus(Lijnen.LIJN7, Bedrijven.QBUZZ, 1);
-		Bus bus8=new Bus(Lijnen.LIJN1, Bedrijven.ARRIVA, 1);
-		Bus bus9=new Bus(Lijnen.LIJN4, Bedrijven.ARRIVA, 1);
-		Bus bus10=new Bus(Lijnen.LIJN5, Bedrijven.FLIXBUS, 1);
-		addBus(3, bus1);
-		addBus(5, bus2);
-		addBus(4, bus3);
-		addBus(6, bus4);	
-		addBus(3, bus5);
-		addBus(5, bus6);
-		addBus(4, bus7); 
-		addBus(6, bus8);	
-		addBus(12, bus9); 
-		addBus(10, bus10);	
-		Bus bus11=new Bus(Lijnen.LIJN1, Bedrijven.ARRIVA, -1);
-		Bus bus12=new Bus(Lijnen.LIJN2, Bedrijven.ARRIVA, -1);
-		Bus bus13=new Bus(Lijnen.LIJN3, Bedrijven.ARRIVA, -1);
-		Bus bus14=new Bus(Lijnen.LIJN4, Bedrijven.ARRIVA, -1);
-		Bus bus15=new Bus(Lijnen.LIJN5, Bedrijven.FLIXBUS, -1);
-		Bus bus16=new Bus(Lijnen.LIJN6, Bedrijven.QBUZZ, -1);
-		Bus bus17=new Bus(Lijnen.LIJN7, Bedrijven.QBUZZ, -1);
-		Bus bus18=new Bus(Lijnen.LIJN1, Bedrijven.ARRIVA, -1);
-		Bus bus19=new Bus(Lijnen.LIJN4, Bedrijven.ARRIVA, -1);
-		Bus bus20=new Bus(Lijnen.LIJN5, Bedrijven.FLIXBUS, -1);
-		addBus(3, bus11);
-		addBus(5, bus12);
-		addBus(4, bus13);
-		addBus(6, bus14);	
-		addBus(3, bus15);
-		addBus(5, bus16);
-		addBus(4, bus17); 
-		addBus(6, bus18);	
-		addBus(12, bus19); 
-		addBus(10, bus20);	
+		initBuslijn(Lijnen.LIJN1, Bedrijven.ARRIVA, 3);
+		initBuslijn(Lijnen.LIJN2, Bedrijven.ARRIVA, 5);
+		initBuslijn(Lijnen.LIJN3, Bedrijven.ARRIVA, 4);
+		initBuslijn(Lijnen.LIJN4, Bedrijven.FLIXBUS,6);
+		initBuslijn(Lijnen.LIJN5, Bedrijven.QBUZZ, 3);
+		initBuslijn(Lijnen.LIJN6, Bedrijven.QBUZZ, 5);
+		initBuslijn(Lijnen.LIJN7, Bedrijven.ARRIVA, 4);
+		initBuslijn(Lijnen.LIJN1, Bedrijven.ARRIVA, 6);
+		initBuslijn(Lijnen.LIJN4, Bedrijven.ARRIVA, 12);
+		initBuslijn(Lijnen.LIJN5, Bedrijven.FLIXBUS, 10);
 		return Collections.min(busStart.keySet());
 	}
-	
+		
+	private static void initBuslijn(Lijnen lijn, Bedrijven bedrijf, int tijd){
+		Bus bus1 = new Bus(lijn, bedrijf, 1);
+		Bus bus2 = new Bus(lijn, bedrijf, -1);
+		addBus(tijd, bus1);
+		addBus(tijd, bus2);
+	}
+
 	public static void main(String[] args) throws InterruptedException {
 		int tijd=0;
 		int counter=0;

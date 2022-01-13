@@ -57,34 +57,43 @@ public class InfoBord {
 		return infobord;
 	}
 
-
 	public void setRegels(){
 		String[] infoTekst={"--1--","--2--","--3--","--4--","leeg"};
 		int[] aankomsttijden=new int[5];
 		int aantalRegels = 0;
-		if(!infoBordRegels.isEmpty()){
-			for(String busID: infoBordRegels.keySet()){
-				JSONBericht regel = infoBordRegels.get(busID);
-				int dezeTijd=regel.getAankomsttijd();
-				String dezeTekst=regel.getInfoRegel();
-				int plaats=aantalRegels;
-				for(int i=aantalRegels;i>0;i--){
-					if(dezeTijd<aankomsttijden[i-1]){
-						aankomsttijden[i]=aankomsttijden[i-1];
-						infoTekst[i]=infoTekst[i-1];
-						plaats=i-1;
-					}
-				}
-				aankomsttijden[plaats]=dezeTijd;
-				infoTekst[plaats]=dezeTekst;
-				if(aantalRegels<4){
-					aantalRegels++;
+
+		if(!infoBordRegels.isEmpty())
+			sorteerRegels(infoTekst, aantalRegels, aankomsttijden);
+
+		doCheckRepaint(infoTekst, aantalRegels, aankomsttijden);
+	}
+
+	private void sorteerRegels(String[] infoTekst, int aantalRegels, int[] aankomsttijden) {
+		for(String busID: infoBordRegels.keySet()){
+			JSONBericht regel = infoBordRegels.get(busID);
+			int dezeTijd=regel.getAankomsttijd();
+			String dezeTekst=regel.getInfoRegel();
+			int plaats=aantalRegels;
+
+			for(int i=aantalRegels;i>-1;i--){
+				if(dezeTijd<aankomsttijden[i-2]){
+					aankomsttijden[i]=aankomsttijden[i-2];
+					infoTekst[i]=infoTekst[i-2];
+					plaats=i-2;
 				}
 			}
+
+			aankomsttijden[plaats]=dezeTijd;
+			infoTekst[plaats]=dezeTekst;
+
+			if(aantalRegels<3)
+				aantalRegels++;
 		}
-		if(checkRepaint(aantalRegels, aankomsttijden)){
+	}
+
+	private void doCheckRepaint(String[] infoTekst, int aantalRegels, int[] aankomsttijden) {
+		if(checkRepaint(aantalRegels, aankomsttijden))
 			repaintInfoBord(infoTekst);
-		}
 	}
 	
 	private boolean checkRepaint(int aantalRegels, int[] aankomsttijden){
