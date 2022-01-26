@@ -13,41 +13,36 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class Producer {
     private static String url = ActiveMQConnection.DEFAULT_BROKER_URL;
-    private static String subject = "XML_Bericht";
-    
+    private static String subject = "XML_Message";
+
     private Session session;
     private Connection connection;
-    
+
     public Producer() {
     }
-    
-    public void sendBericht(String bericht) {
-    	try {
-    		createConnection();
-    		sendTextMessage(bericht);
+
+    public void sendMessage(String message) {
+        try {
+            createConnection();
+            sendTextMessage(message);
             connection.close();
-    	} catch (JMSException e) {
-    		e.printStackTrace();
-    	}
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
     }
-        
-    
+
     private void createConnection() throws JMSException {
-       ConnectionFactory connectionFactory =
-           new ActiveMQConnectionFactory(url);
-       connection = connectionFactory.createConnection();
-       connection.start();
-       session = connection.createSession(false,
-           Session.AUTO_ACKNOWLEDGE);
+        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
+        connection = connectionFactory.createConnection();
+        connection.start();
+        session = connection.createSession(false,
+                Session.AUTO_ACKNOWLEDGE);
     }
-    
-    
-    private void sendTextMessage(String themessage) throws JMSException {
-//    	System.out.println("Producer starting message: " + new Date());
+
+    private void sendTextMessage(String message) throws JMSException {
         Destination destination = session.createQueue(subject);
         MessageProducer producer = session.createProducer(destination);
-        TextMessage msg = session.createTextMessage(themessage);
+        TextMessage msg = session.createTextMessage(message);
         producer.send(msg);
-//        System.out.println("Sent message '" + msg.getText() + "'");
-    }    
+    }
 }

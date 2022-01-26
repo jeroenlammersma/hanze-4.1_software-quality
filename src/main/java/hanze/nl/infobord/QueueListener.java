@@ -10,23 +10,22 @@ public class QueueListener implements MessageListener {
 
 	public QueueListener(String consumerName) {
 		this.consumerName = consumerName;
-		InfoBord infobord = InfoBord.getInfoBord();
+		InfoBoard infoBoard = InfoBoard.getInfoBoard();
 	}
 
 	public void onMessage(Message message) {
 		try {
 			if (message instanceof TextMessage) {
-	            TextMessage textMessage = (TextMessage) message;
+				TextMessage textMessage = (TextMessage) message;
 				String text = textMessage.getText();
-				InfoBord infobord = InfoBord.getInfoBord();
-				infobord.verwerktBericht(text);
-				infobord.setRegels();
-	        } else {
-	            System.out.println("Consumer("+consumerName+"): Received: " + message);
-	        }
-		} 	        catch (JMSException e) {
+				InfoBoard infoboard = InfoBoard.getInfoBoard();
+				infoboard.processedMessage(text);
+				infoboard.setLines();
+			} else {
+				System.out.println("Consumer(" + consumerName + "): Received: " + message);
+			}
+		} catch (JMSException e) {
 			e.printStackTrace();
-    	}
+		}
 	}
 }
-

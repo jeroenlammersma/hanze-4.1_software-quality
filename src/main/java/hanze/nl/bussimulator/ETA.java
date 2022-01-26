@@ -1,13 +1,13 @@
 package hanze.nl.bussimulator;
 
 public class ETA {
-	String halteNaam;
-	int richting;
-	int aankomsttijd;
-	
-	ETA(String halteNaam, int richting, int aankomsttijd){
-		this.halteNaam=halteNaam;
-		this.richting=richting;
-		this.aankomsttijd=aankomsttijd;
+	String stopName;
+	int direction;
+	int arrivalTime;
+
+	ETA(String stopName, int direction, int arrivalTime) {
+		this.stopName = stopName;
+		this.direction = direction;
+		this.arrivalTime = arrivalTime;
 	}
 }

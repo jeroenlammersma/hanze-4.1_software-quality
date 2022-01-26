@@ -10,31 +10,33 @@ import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-public  class ListenerStarter implements Runnable, ExceptionListener {
-	private String selector="";
-	
-	public ListenerStarter() {
-	}
-	
-	public ListenerStarter(String selector) {
-		this.selector=selector;
-	}
+public class ListenerStarter implements Runnable, ExceptionListener {
+    private String selector = "";
 
-	public void run() {
+    public ListenerStarter() {
+    }
+
+    public ListenerStarter(String selector) {
+        this.selector = selector;
+    }
+
+    public void run() {
         try {
-            ActiveMQConnectionFactory connectionFactory = 
-            		new ActiveMQConnectionFactory(ActiveMQConnection.DEFAULT_BROKER_URL);
+            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+                    ActiveMQConnection.DEFAULT_BROKER_URL);
             Connection connection = connectionFactory.createConnection();
             connection.start();
             connection.setExceptionListener(this);
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createTopic("JSON_Berichten");
-            MessageConsumer consumer = session.createConsumer(destination,selector);
-            System.out.println("Produce, wait, consume"+ selector);
+            MessageConsumer consumer = session.createConsumer(destination, selector);
+            System.out.println("Produce, wait, consume" + selector);
             consumer.setMessageListener(new QueueListener(selector));
-/*            consumer.close();
-            session.close();
-            connection.close();*/
+            /*
+             * consumer.close();
+             * session.close();
+             * connection.close();
+             */
         } catch (Exception e) {
             System.out.println("Caught: " + e);
             e.printStackTrace();
@@ -42,6 +44,6 @@ public  class ListenerStarter implements Runnable, ExceptionListener {
     }
 
     public synchronized void onException(JMSException ex) {
-        System.out.println("JMS Exception occured.  Shutting down client.");
+        System.out.println("JMS Exception occured. Shutting down client.");
     }
 }

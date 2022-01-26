@@ -1,109 +1,113 @@
 package hanze.nl.bussimulator;
 
 import com.thoughtworks.xstream.XStream;
-import hanze.nl.bussimulator.Halte.Positie;
+import hanze.nl.bussimulator.StopEnum.Position;
 
-public class Bus{
+public class Bus {
 
-	private Bedrijven bedrijf;
-	private Lijnen lijn;
-	private int halteNummer;
-	private int totVolgendeHalte;
-	private int richting;
-	private boolean bijHalte;
+	private Companies company;
+	private Lines line;
+	private int stopNumber;
+	private int untilNextStop;
+	private int direction;
+	private boolean atStop;
 	private String busID;
-	
-	Bus(Lijnen lijn, Bedrijven bedrijf, int richting){
-		this.lijn=lijn;
-		this.bedrijf=bedrijf;
-		this.richting=richting;
-		this.halteNummer = -1;
-		this.totVolgendeHalte = 0;
-		this.bijHalte = false;
-		this.busID = "Niet gestart";
+
+	Bus(Lines line, Companies company, int direction) {
+		this.line = line;
+		this.company = company;
+		this.direction = direction;
+		this.stopNumber = -1;
+		this.untilNextStop = 0;
+		this.atStop = false;
+		this.busID = "Not started";
 	}
-	
-	public void setbusID(int starttijd){
-		this.busID=starttijd+lijn.name()+richting;
+
+	public void setbusID(int startTime) {
+		this.busID = startTime + line.name() + direction;
 	}
-	
-	public void naarVolgendeHalte(){
-		Positie volgendeHalte = lijn.getHalte(halteNummer+richting).getPositie();
-		totVolgendeHalte = lijn.getHalte(halteNummer).afstand(volgendeHalte);
+
+	public void toNextStop() {
+		Position nextStop = line.getStop(stopNumber + direction).getPosition();
+		untilNextStop = line.getStop(stopNumber).distance(nextStop);
 	}
-	
-	public boolean halteBereikt(){
-		halteNummer+=richting;
-		bijHalte=true;
-		if ((halteNummer>=lijn.getLengte()-1) || (halteNummer == 0)) {
-			System.out.printf("Bus %s heeft eindpunt (halte %s, richting %d) bereikt.%n", 
-					lijn.name(), lijn.getHalte(halteNummer), lijn.getRichting(halteNummer));
+
+	public boolean stopReached() {
+		stopNumber += direction;
+		atStop = true;
+		if ((stopNumber >= line.getLength() - 1) || (stopNumber == 0)) {
+			System.out.printf("Bus %s has reached terminus (halte %s, richting %d).%n",
+					line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
 			return true;
+		} else {
+			System.out.printf("Bus %s has reached stop %s, direction %d.%n",
+					line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
+			toNextStop();
 		}
-		else {
-			System.out.printf("Bus %s heeft halte %s, richting %d bereikt.%n", 
-					lijn.name(), lijn.getHalte(halteNummer), lijn.getRichting(halteNummer));		
-			naarVolgendeHalte();
-		}		
 		return false;
 	}
-	
+
 	public void start() {
-		halteNummer = (richting==1) ? 0 : lijn.getLengte()-1;
-		System.out.printf("Bus %s is vertrokken van halte %s in richting %d.%n", 
-				lijn.name(), lijn.getHalte(halteNummer), lijn.getRichting(halteNummer));		
-		naarVolgendeHalte();
+		stopNumber = (direction == 1) ? 0 : line.getLength() - 1;
+		System.out.printf("Bus %s has left from stop %s in direction %d.%n",
+				line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
+		toNextStop();
 	}
 
-	public boolean move(){
-		boolean eindpuntBereikt = false;
-		bijHalte=false;
-		if (halteNummer == -1) {
+	public boolean move() {
+		boolean terminusReached = false;
+		atStop = false;
+		if (stopNumber == -1) {
 			start();
-		}
-		else {
-			totVolgendeHalte--;
-			if (totVolgendeHalte==0){
-				eindpuntBereikt=halteBereikt();
+		} else {
+			untilNextStop--;
+			if (untilNextStop == 0) {
+				terminusReached = stopReached();
 			}
 		}
-		return eindpuntBereikt;
-	}
-	
-	public void sendETAs(int nu){
-		int i=0;
-		Bericht bericht = new Bericht(lijn.name(),bedrijf.name(),busID,nu);
-		if (bijHalte) {
-			ETA eta = new ETA(lijn.getHalte(halteNummer).name(),lijn.getRichting(halteNummer),0);
-			bericht.ETAs.add(eta);
-		}
-		Positie eerstVolgende=lijn.getHalte(halteNummer+richting).getPositie();
-		int tijdNaarHalte=totVolgendeHalte+nu;
-		for (i = halteNummer+richting ; !(i>=lijn.getLengte()) && !(i < 0); i=i+richting ){
-			tijdNaarHalte+= lijn.getHalte(i).afstand(eerstVolgende);
-			ETA eta = new ETA(lijn.getHalte(i).name(), lijn.getRichting(i),tijdNaarHalte);
-			bericht.ETAs.add(eta);
-			eerstVolgende=lijn.getHalte(i).getPositie();
-		}
-		bericht.eindpunt=lijn.getHalte(i-richting).name();
-		sendBericht(bericht);
-	}
-	
-	public void sendLastETA(int nu){
-		Bericht bericht = new Bericht(lijn.name(),bedrijf.name(),busID,nu);
-		String eindpunt = lijn.getHalte(halteNummer).name();
-		ETA eta = new ETA(eindpunt,lijn.getRichting(halteNummer),0);
-		bericht.ETAs.add(eta);
-		bericht.eindpunt = eindpunt;
-		sendBericht(bericht);
+		return terminusReached;
 	}
 
-	public void sendBericht(Bericht bericht){
-    	XStream xstream = new XStream();
-    	xstream.alias("Bericht", Bericht.class);
-    	xstream.alias("ETA", ETA.class);
-    	String xml = xstream.toXML(bericht);
-    	Producer producer = new Producer();
-    	producer.sendBericht(xml);		
+	public void sendETAs(int now) {
+		int position = 0;
+		BusMessage message = new BusMessage(line.name(), company.name(), busID, now);
+		if (atStop)
+			addETAToMessage(line, position, message, 0);
+
+		Position nextStop = line.getStop(stopNumber + direction).getPosition();
+		int timeToStop = untilNextStop + now;
+
+		for (position = stopNumber + direction; !(position >= line.getLength())
+				&& !(position < 0); position = position + direction) {
+			timeToStop += line.getStop(position).distance(nextStop);
+			addETAToMessage(line, position, message, timeToStop);
+			nextStop = line.getStop(position).getPosition();
+		}
+
+		message.terminus = line.getStop(position - direction).name();
+		sendMessage(message);
+	}
+
+	private void addETAToMessage(Lines line, int position, BusMessage message, int arrivalTime) {
+		ETA eta = new ETA(line.getStop(position).name(), line.getDirection(position), arrivalTime);
+		message.ETAs.add(eta);
+	}
+
+	public void sendLastETA(int now) {
+		BusMessage message = new BusMessage(line.name(), company.name(), busID, now);
+		String terminus = line.getStop(stopNumber).name();
+		ETA eta = new ETA(terminus, line.getDirection(stopNumber), 0);
+		message.ETAs.add(eta);
+		message.terminus = terminus;
+		sendMessage(message);
+	}
+
+	public void sendMessage(BusMessage message) {
+		XStream xstream = new XStream();
+		xstream.alias("Message", BusMessage.class);
+		xstream.alias("ETA", ETA.class);
+		String xml = xstream.toXML(message);
+		Producer producer = new Producer();
+		producer.sendMessage(xml);
 	}
 }
