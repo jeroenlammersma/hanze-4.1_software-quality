@@ -3,12 +3,12 @@ package hanze.nl.infobord;
 import hanze.nl.tijdtools.InfoboardTimeFunctions;
 
 public class JSONMessage {
-	private int time;
-	private int arrivalTime;
-	private String lineName;
-	private String busID;
-	private String company;
-	private String terminus;
+	public int time;
+	public int arrivalTime;
+	public String lineName;
+	public String busID;
+	public String company;
+	public String terminus;
 
 	public JSONMessage(int time, int arrivalTime, String lineName, String busID, String company, String teminus) {
 		super();
@@ -22,54 +22,6 @@ public class JSONMessage {
 
 	public JSONMessage() {
 
-	}
-
-	public int getTime() {
-		return time;
-	}
-
-	public void setTime(int time) {
-		this.time = time;
-	}
-
-	public int getArrivalTime() {
-		return arrivalTime;
-	}
-
-	public void setArrivalTime(int arrivalTime) {
-		this.arrivalTime = arrivalTime;
-	}
-
-	public String getLineName() {
-		return lineName;
-	}
-
-	public void setLineName(String lineName) {
-		this.lineName = lineName;
-	}
-
-	public String getBusID() {
-		return busID;
-	}
-
-	public void setBusID(String busID) {
-		this.busID = busID;
-	}
-
-	public String getCompany() {
-		return company;
-	}
-
-	public void setCompany(String company) {
-		this.company = company;
-	}
-
-	public String setTerminus() {
-		return terminus;
-	}
-
-	public void setTerminus(String endpoint) {
-		this.terminus = endpoint;
 	}
 
 	public String GetInfoLine() {
