@@ -38,7 +38,7 @@ public class Runner {
 			Bus bus = itr.next();
 			boolean terminusReached = bus.move();
 			if (terminusReached) {
-				bus.sendLastETA(now);
+				bus.getMessageControler().sendLastETA(now);
 				itr.remove();
 			}
 		}
@@ -48,7 +48,7 @@ public class Runner {
 		Iterator<Bus> itr = activeBusses.iterator();
 		while (itr.hasNext()) {
 			Bus bus = itr.next();
-			bus.sendETAs(now);
+			bus.getMessageControler().sendETAs(now);
 		}
 	}
 
