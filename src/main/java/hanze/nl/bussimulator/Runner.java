@@ -16,9 +16,11 @@ public class Runner {
 
 	private static void addBus(int startTime, Bus bus) {
 		ArrayList<Bus> busses = new ArrayList<Bus>();
+
 		if (busStart.containsKey(startTime)) {
 			busses = busStart.get(startTime);
 		}
+
 		busses.add(bus);
 		busStart.put(startTime, busses);
 		bus.setbusID(startTime);
@@ -28,15 +30,18 @@ public class Runner {
 		for (Bus bus : busStart.get(time)) {
 			activeBusses.add(bus);
 		}
+
 		busStart.remove(time);
 		return (!busStart.isEmpty()) ? Collections.min(busStart.keySet()) : -1;
 	}
 
 	public static void moveBusses(int now) {
 		Iterator<Bus> itr = activeBusses.iterator();
+
 		while (itr.hasNext()) {
 			Bus bus = itr.next();
 			boolean terminusReached = bus.move();
+
 			if (terminusReached) {
 				bus.getMessageControler().sendLastETA(now);
 				itr.remove();
@@ -46,6 +51,7 @@ public class Runner {
 
 	public static void sendETAs(int now) {
 		Iterator<Bus> itr = activeBusses.iterator();
+
 		while (itr.hasNext()) {
 			Bus bus = itr.next();
 			bus.getMessageControler().sendETAs(now);
@@ -79,6 +85,7 @@ public class Runner {
 		TimeFunctions timeFunctions = new TimeFunctions();
 		timeFunctions.initSimulationTimes(interval, syncInterval);
 		int next = initBusses();
+
 		while ((next >= 0) || !activeBusses.isEmpty()) {
 			counter = timeFunctions.getCounter();
 			time = timeFunctions.getTimeCounter();

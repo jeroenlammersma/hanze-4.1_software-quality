@@ -35,8 +35,7 @@ public class Producer {
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
         connection = connectionFactory.createConnection();
         connection.start();
-        session = connection.createSession(false,
-                Session.AUTO_ACKNOWLEDGE);
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
     }
 
     private void sendTextMessage(String message) throws JMSException {

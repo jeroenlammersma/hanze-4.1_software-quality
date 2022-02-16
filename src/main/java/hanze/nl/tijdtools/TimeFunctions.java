@@ -38,6 +38,7 @@ public class TimeFunctions {
 		Thread.sleep(interval);
 		simulationTime.increment(new Time(0, 0, 1));
 		syncCounter--;
+
 		if (syncCounter == 0) {
 			syncCounter = syncInterval;
 			synchronizeTime();
@@ -52,14 +53,17 @@ public class TimeFunctions {
 		int hoursDifference = referenceTime.getHour() - workTime.getHour();
 		int minutesDifference = referenceTime.getMinute() - workTime.getMinute();
 		int secondsDifference = referenceTime.getSecond() - workTime.getSecond();
+
 		if (secondsDifference < 0) {
 			minutesDifference--;
 			secondsDifference += 60;
 		}
+
 		if (minutesDifference < 0) {
 			hoursDifference--;
 			minutesDifference += 60;
 		}
+
 		return new Time(hoursDifference, minutesDifference, secondsDifference);
 	}
 

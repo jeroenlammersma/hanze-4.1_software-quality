@@ -11,6 +11,7 @@ public class InfoboardTimeFunctions {
 			String result = httpFuncties.executeGet("json");
 			Time tijd = new ObjectMapper().readValue(result, Time.class);
 			return tijd;
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new Time(0, 0, 0);

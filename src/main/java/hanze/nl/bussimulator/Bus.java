@@ -41,6 +41,7 @@ public class Bus {
 	public boolean stopReached() {
 		stopNumber += direction;
 		atStop = true;
+
 		if ((stopNumber >= line.getLength() - 1) || (stopNumber == 0)) {
 			System.out.printf("Bus %s has reached terminus (halte %s, richting %d).%n",
 					line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
@@ -50,6 +51,7 @@ public class Bus {
 					line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
 			toNextStop();
 		}
+
 		return false;
 	}
 
@@ -63,6 +65,7 @@ public class Bus {
 	public boolean move() {
 		boolean terminusReached = false;
 		atStop = false;
+
 		if (stopNumber == -1) {
 			start();
 		} else {
@@ -71,6 +74,7 @@ public class Bus {
 				terminusReached = stopReached();
 			}
 		}
+
 		return terminusReached;
 	}
 }

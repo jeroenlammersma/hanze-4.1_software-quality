@@ -28,6 +28,7 @@ public class ArrivaLogger {
 			boolean newMessage = true;
 			int numberOfMessages = 0;
 			int numberOfETAs = 0;
+
 			while (newMessage) {
 				Message message = consumer.receive(2000);
 				newMessage = false;
@@ -45,10 +46,12 @@ public class ArrivaLogger {
 					System.out.println("Received: " + message);
 				}
 			}
+
 			consumer.close();
 			session.close();
 			connection.close();
 			System.out.println(numberOfMessages + " messages with " + numberOfETAs + " ETAs processed.");
+
 		} catch (Exception e) {
 			System.out.println("Caught: " + e);
 			e.printStackTrace();

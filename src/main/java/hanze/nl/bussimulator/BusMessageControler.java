@@ -27,8 +27,9 @@ public class BusMessageControler {
     public void sendETAs(int now) {
         int position = 0;
         BusMessage message = new BusMessage(line.name(), company.name(), busID, now);
-        if (atStop)
+        if (atStop) {
             addETAToMessage(line, position, message, 0);
+        }
 
         Position nextStop = line.getStop(stopNumber + direction).getPosition();
         int timeToStop = untilNextStop + now;
