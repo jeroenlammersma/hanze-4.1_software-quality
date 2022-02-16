@@ -71,7 +71,7 @@ public class InfoBoard {
 	private void sortLines(String[] infoText, int numberOfLines, int[] arrivalTimes) {
 		for (String busID : infoBoardLines.keySet()) {
 			JSONMessage line = infoBoardLines.get(busID);
-			int thisTime = line.getArrivalTime();
+			int thisTime = line.arrivalTime;
 			String thisText = line.GetInfoLine();
 			int place = numberOfLines;
 
@@ -122,11 +122,11 @@ public class InfoBoard {
 	public static void processedMessage(String incoming) {
 		try {
 			JSONMessage message = new ObjectMapper().readValue(incoming, JSONMessage.class);
-			String busID = message.getBusID();
-			Integer time = message.getTime();
+			String busID = message.busID;
+			Integer time = message.time;
 			if (!lastMessage.containsKey(busID) || lastMessage.get(busID) <= time) {
 				lastMessage.put(busID, time);
-				if (message.getArrivalTime() == 0) {
+				if (message.arrivalTime == 0) {
 					infoBoardLines.remove(busID);
 				} else {
 					infoBoardLines.put(busID, message);
