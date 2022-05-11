@@ -26,13 +26,23 @@ public class Runner {
 		bus.setbusID(startTime);
 	}
 
-	private static int startBusses(int time) {
+	private static void startBusses(int time) {
 		for (Bus bus : busStart.get(time)) {
 			activeBusses.add(bus);
 		}
 
 		busStart.remove(time);
+	}
+
+	private static int isBussesEmpty() {
 		return (!busStart.isEmpty()) ? Collections.min(busStart.keySet()) : -1;
+	}
+
+	private static void initBusLine(Lines line, Companies company, int time) {
+		Bus bus1 = new Bus(line, company, 1);
+		Bus bus2 = new Bus(line, company, -1);
+		addBus(time, bus1);
+		addBus(time, bus2);
 	}
 
 	public static void moveBusses(int now) {
@@ -40,7 +50,8 @@ public class Runner {
 
 		while (itr.hasNext()) {
 			Bus bus = itr.next();
-			boolean terminusReached = bus.move();
+			bus.move();
+			boolean terminusReached = bus.isTerminusReached();
 
 			if (terminusReached) {
 				bus.getMessageControler().sendLastETA(now);
@@ -58,7 +69,7 @@ public class Runner {
 		}
 	}
 
-	public static int initBusses() {
+	public static void initBusses() {
 		initBusLine(Lines.LIJN1, Companies.ARRIVA, 3);
 		initBusLine(Lines.LIJN2, Companies.ARRIVA, 5);
 		initBusLine(Lines.LIJN3, Companies.ARRIVA, 4);
@@ -69,14 +80,10 @@ public class Runner {
 		initBusLine(Lines.LIJN1, Companies.ARRIVA, 6);
 		initBusLine(Lines.LIJN4, Companies.ARRIVA, 12);
 		initBusLine(Lines.LIJN5, Companies.FLIXBUS, 10);
-		return Collections.min(busStart.keySet());
 	}
 
-	private static void initBusLine(Lines line, Companies company, int time) {
-		Bus bus1 = new Bus(line, company, 1);
-		Bus bus2 = new Bus(line, company, -1);
-		addBus(time, bus1);
-		addBus(time, bus2);
+	public static int nextBus() {
+		return Collections.min(busStart.keySet());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -84,13 +91,15 @@ public class Runner {
 		int counter = 0;
 		TimeFunctions timeFunctions = new TimeFunctions();
 		timeFunctions.initSimulationTimes(interval, syncInterval);
-		int next = initBusses();
+		initBusses();
+		int next = nextBus();
 
 		while ((next >= 0) || !activeBusses.isEmpty()) {
 			counter = timeFunctions.getCounter();
 			time = timeFunctions.getTimeCounter();
 			System.out.println("Current time:" + timeFunctions.getSimulationDisplayTime());
-			next = (counter == next) ? startBusses(counter) : next;
+			startBusses(counter);
+			next = (counter == next) ? isBussesEmpty() : next;
 			moveBusses(time);
 			sendETAs(time);
 			timeFunctions.simulatorStep();

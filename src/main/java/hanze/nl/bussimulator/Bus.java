@@ -5,22 +5,22 @@ import hanze.nl.bussimulator.StopEnum.Position;
 public class Bus {
 
 	private BusMessageControler busMessageController;
-	private Companies company;
 	private Lines line;
 	private int stopNumber;
 	private int untilNextStop;
 	private int direction;
 	private boolean atStop;
 	private String busID;
+	private boolean terminusReached;
 
 	Bus(Lines line, Companies company, int direction) {
 		this.line = line;
-		this.company = company;
 		this.direction = direction;
 		this.stopNumber = -1;
 		this.untilNextStop = 0;
 		this.atStop = false;
 		this.busID = "Not started";
+		this.terminusReached = false;
 		busMessageController = new BusMessageControler(company, line, stopNumber, untilNextStop, direction, atStop,
 				busID);
 	}
@@ -43,12 +43,12 @@ public class Bus {
 		atStop = true;
 
 		if ((stopNumber >= line.getLength() - 1) || (stopNumber == 0)) {
-			System.out.printf("Bus %s has reached terminus (halte %s, richting %d).%n",
-					line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
+			System.out.printf("Bus %s has reached terminus (halte %s, richting %d).%n", line.name(),
+					line.getStop(stopNumber), line.getDirection(stopNumber));
 			return true;
 		} else {
-			System.out.printf("Bus %s has reached stop %s, direction %d.%n",
-					line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
+			System.out.printf("Bus %s has reached stop %s, direction %d.%n", line.name(), line.getStop(stopNumber),
+					line.getDirection(stopNumber));
 			toNextStop();
 		}
 
@@ -57,13 +57,16 @@ public class Bus {
 
 	public void start() {
 		stopNumber = (direction == 1) ? 0 : line.getLength() - 1;
-		System.out.printf("Bus %s has left from stop %s in direction %d.%n",
-				line.name(), line.getStop(stopNumber), line.getDirection(stopNumber));
+		System.out.printf("Bus %s has left from stop %s in direction %d.%n", line.name(), line.getStop(stopNumber),
+				line.getDirection(stopNumber));
 		toNextStop();
 	}
 
-	public boolean move() {
-		boolean terminusReached = false;
+	public boolean isTerminusReached() {
+		return terminusReached;
+	}
+
+	public void move() {
 		atStop = false;
 
 		if (stopNumber == -1) {
@@ -75,6 +78,5 @@ public class Bus {
 			}
 		}
 
-		return terminusReached;
 	}
 }

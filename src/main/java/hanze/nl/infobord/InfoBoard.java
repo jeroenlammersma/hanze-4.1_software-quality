@@ -57,6 +57,24 @@ public class InfoBoard {
 		return infoBoard;
 	}
 
+	public static void processedMessage(String incoming) {
+		try {
+			JSONMessage message = new ObjectMapper().readValue(incoming, JSONMessage.class);
+			String busID = message.busID;
+			Integer time = message.time;
+			if (!lastMessage.containsKey(busID) || lastMessage.get(busID) <= time) {
+				lastMessage.put(busID, time);
+				if (message.arrivalTime == 0) {
+					infoBoardLines.remove(busID);
+				} else {
+					infoBoardLines.put(busID, message);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void setLines() {
 		String[] infoText = { "--1--", "--2--", "--3--", "--4--", "empty" };
 		int[] arrivalTimes = new int[5];
@@ -91,11 +109,6 @@ public class InfoBoard {
 		}
 	}
 
-	private void doCheckRepaint(String[] infoText, int numberOfLines, int[] arrivalTimes) {
-		if (checkRepaint(numberOfLines, arrivalTimes))
-			repaintInfoBord(infoText);
-	}
-
 	private boolean checkRepaint(int numberOfLines, int[] arrivalTimes) {
 		int totalNumberOfTimes = 0;
 		for (int i = 0; i < numberOfLines; i++) {
@@ -119,21 +132,9 @@ public class InfoBoard {
 		frame.repaint();
 	}
 
-	public static void processedMessage(String incoming) {
-		try {
-			JSONMessage message = new ObjectMapper().readValue(incoming, JSONMessage.class);
-			String busID = message.busID;
-			Integer time = message.time;
-			if (!lastMessage.containsKey(busID) || lastMessage.get(busID) <= time) {
-				lastMessage.put(busID, time);
-				if (message.arrivalTime == 0) {
-					infoBoardLines.remove(busID);
-				} else {
-					infoBoardLines.put(busID, message);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void doCheckRepaint(String[] infoText, int numberOfLines, int[] arrivalTimes) {
+		if (checkRepaint(numberOfLines, arrivalTimes))
+			repaintInfoBord(infoText);
 	}
+
 }

@@ -24,30 +24,42 @@ public class BusMessageControler {
         this.busID = busID;
     }
 
+    public void sendMessage(BusMessage message) {
+        XStream xstream = new XStream();
+        xstream.alias("Message", BusMessage.class);
+        xstream.alias("ETA", ETA.class);
+        String xml = xstream.toXML(message);
+        Producer producer = new Producer();
+        producer.sendMessage(xml);
+    }
+
     public void sendETAs(int now) {
         int position = 0;
         BusMessage message = new BusMessage(line.name(), company.name(), busID, now);
-        if (atStop) {
-            addETAToMessage(line, position, message, 0);
-        }
+        addAtStop(line, position, message);
+        addNextStops(position, now, message);
+        addTerminus(position, message);
+        sendMessage(message);
+    }
 
+    private void addAtStop(Lines line, int position, BusMessage message) {
+        if (atStop)
+            addETAToMessage(line, position, message, 0);
+    }
+
+    private void addNextStops(int position, int now, BusMessage message) {
         Position nextStop = line.getStop(stopNumber + direction).getPosition();
         int timeToStop = untilNextStop + now;
-
         for (position = stopNumber + direction; !(position >= line.getLength())
                 && !(position < 0); position = position + direction) {
             timeToStop += line.getStop(position).distance(nextStop);
             addETAToMessage(line, position, message, timeToStop);
             nextStop = line.getStop(position).getPosition();
         }
-
-        message.terminus = line.getStop(position - direction).name();
-        sendMessage(message);
     }
 
-    private void addETAToMessage(Lines line, int position, BusMessage message, int arrivalTime) {
-        ETA eta = new ETA(line.getStop(position).name(), line.getDirection(position), arrivalTime);
-        message.ETAs.add(eta);
+    private void addTerminus(int position, BusMessage message) {
+        message.terminus = line.getStop(position - direction).name();
     }
 
     public void sendLastETA(int now) {
@@ -59,12 +71,9 @@ public class BusMessageControler {
         sendMessage(message);
     }
 
-    public void sendMessage(BusMessage message) {
-        XStream xstream = new XStream();
-        xstream.alias("Message", BusMessage.class);
-        xstream.alias("ETA", ETA.class);
-        String xml = xstream.toXML(message);
-        Producer producer = new Producer();
-        producer.sendMessage(xml);
+    private void addETAToMessage(Lines line, int position, BusMessage message, int arrivalTime) {
+        ETA eta = new ETA(line.getStop(position).name(), line.getDirection(position), arrivalTime);
+        message.ETAs.add(eta);
     }
+
 }
